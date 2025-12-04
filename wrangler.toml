@@ -1,8 +1,0 @@
-name = "freekassa-worker"
-main = "index.js"
-compatibility_date = "2024-06-01"
-
-[vars]
-FK_SHOP_ID = "67879"
-FK_SECRET1 = "83+FJ$f{{N$,dFK"
-FK_SECRET2 = "^JJjIfy1Q@rSTvX"
