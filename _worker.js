@@ -3,9 +3,9 @@ export default {
     const url = new URL(request.url);
 
     // ------------------
-    // Главная страница
+    // Главная страница (ТЕПЕРЬ ТОЛЬКО /donate)
     // ------------------
-    if (url.pathname === "/donate") {
+    if (url.pathname === "/donate") { // Изменено с "/" на "/donate"
       return new Response(`
 <!DOCTYPE html>
 <html lang="ru">
@@ -36,7 +36,6 @@ export default {
     if (url.pathname === "/create" && request.method === "POST") {
       const form = await request.formData();
       const amount = form.get("amount") || "1.00";
-      // const message = form.get("message") || ""; // Удалено
       const orderId = "ord" + Date.now() + Math.floor(Math.random() * 1000);
 
       // Формирование подписи: md5(MERCHANT_ID:AMOUNT:SECRET1:RUB:ORDER_ID)
@@ -53,7 +52,6 @@ export default {
         o: orderId,
         currency: "RUB",
         s: sign,
-        // us_message: message, // Удалено
         lang: "ru",
         success_url: `${baseUrl}/success`,
         fail_url: `${baseUrl}/fail`
@@ -71,7 +69,6 @@ export default {
       const AMOUNT = form.get("AMOUNT");
       const ORDER_ID = form.get("MERCHANT_ORDER_ID");
       const SIGN = form.get("SIGN");
-      // const MESSAGE = form.get("us_message") || ""; // Удалено
 
       if (!MERCHANT_ID || !AMOUNT || !ORDER_ID || !SIGN) {
         return new Response("Bad Request", { status: 400 });
@@ -100,6 +97,9 @@ export default {
       return new Response("<h1>Платёж не выполнен</h1><p>Оплата была отменена или произошла ошибка.</p>", { headers: { "Content-Type":"text/html;charset=UTF-8" } });
     }
 
+    // Если путь не соответствует ни одному из вышеперечисленных (/donate, /create, /callback, /success, /fail),
+    // возвращаем 404, чтобы Worker не обрабатывал запрос и позволил
+    // Cloudflare или Origin-серверу обслужить остальные пути (включая корневой "/")
     return new Response("Not found", { status: 404 });
   }
 };
