@@ -2,9 +2,9 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // -------------------
+    // ------------------
     // Главная страница
-    // -------------------
+    // ------------------
     if (url.pathname === "/") {
       const baseUrl = env.BASE_URL || url.origin;
       return new Response(`
