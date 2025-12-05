@@ -5,7 +5,7 @@ export default {
     // ------------------
     // Главная страница
     // ------------------
-    if (url.pathname === "/") {
+    if (url.pathname === "/donate") {
       return new Response(`
 <!DOCTYPE html>
 <html lang="ru">
