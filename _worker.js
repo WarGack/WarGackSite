@@ -21,8 +21,6 @@ export default {
   <form action="/create" method="POST">
     <label>Сумма (₽):</label>
     <input type="number" name="amount" min="1" step="1" required>
-    <label>Сообщение (до 300 символов):</label>
-    <textarea name="message" maxlength="300" placeholder="Ваше сообщение..."></textarea>
     <button type="submit">Отправить</button>
   </form>
 </div>
@@ -38,7 +36,7 @@ export default {
     if (url.pathname === "/create" && request.method === "POST") {
       const form = await request.formData();
       const amount = form.get("amount") || "1.00";
-      const message = form.get("message") || "";
+      // const message = form.get("message") || ""; // Удалено
       const orderId = "ord" + Date.now() + Math.floor(Math.random() * 1000);
 
       // Формирование подписи: md5(MERCHANT_ID:AMOUNT:SECRET1:RUB:ORDER_ID)
@@ -55,7 +53,7 @@ export default {
         o: orderId,
         currency: "RUB",
         s: sign,
-        us_message: message,
+        // us_message: message, // Удалено
         lang: "ru",
         success_url: `${baseUrl}/success`,
         fail_url: `${baseUrl}/fail`
@@ -73,7 +71,7 @@ export default {
       const AMOUNT = form.get("AMOUNT");
       const ORDER_ID = form.get("MERCHANT_ORDER_ID");
       const SIGN = form.get("SIGN");
-      // const MESSAGE = form.get("us_message") || ""; // Удалено, не используется
+      // const MESSAGE = form.get("us_message") || ""; // Удалено
 
       if (!MERCHANT_ID || !AMOUNT || !ORDER_ID || !SIGN) {
         return new Response("Bad Request", { status: 400 });
@@ -86,7 +84,6 @@ export default {
       const expected = md5(hash);
 
       if (expected === SIGN) {
-        // Логика сохранения данных о донате УДАЛЕНА
         return new Response("YES", { status: 200 });
       }
 
