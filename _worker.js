@@ -37,7 +37,7 @@ export default {
       return Response.redirect(paymentUrl, 302);
     }
 
-    // -----------------------------
+    // -----------------------------=
     // FREEKASSA CALLBACK (POST)
     // -----------------------------
     if (url.pathname === "/callback" && request.method === "POST") {
