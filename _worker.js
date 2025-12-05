@@ -3,9 +3,9 @@ export default {
     const url = new URL(request.url);
 
     // ------------------
-    // Главная страница (ТЕПЕРЬ ТОЛЬКО /donate)
+    // Главная страница (ТОЛЬКО /donate)
     // ------------------
-    if (url.pathname === "/donate") { // Изменено с "/" на "/donate"
+    if (url.pathname === "/donate") {
       return new Response(`
 <!DOCTYPE html>
 <html lang="ru">
@@ -97,9 +97,11 @@ export default {
       return new Response("<h1>Платёж не выполнен</h1><p>Оплата была отменена или произошла ошибка.</p>", { headers: { "Content-Type":"text/html;charset=UTF-8" } });
     }
 
-    // Если путь не соответствует ни одному из вышеперечисленных (/donate, /create, /callback, /success, /fail),
-    // возвращаем 404, чтобы Worker не обрабатывал запрос и позволил
-    // Cloudflare или Origin-серверу обслужить остальные пути (включая корневой "/")
-    return new Response("Not found", { status: 404 });
+    // -------------------
+    // Пропуск остальных запросов (включая "/")
+    // -------------------
+    // Если путь не соответствует ни одному из обработчиков, мы передаем запрос дальше
+    // к Origin-серверу, который отдаст ваш index.html
+    return fetch(request);
   }
 };
