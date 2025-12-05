@@ -99,6 +99,23 @@ export default {
         return new Response("Bad Request", { status: 400 });
       }
 
+      // Успешная оплата
+if (url.pathname === "/success") {
+  return new Response(`
+  <h1>Платёж успешно завершён</h1>
+  <p>Спасибо за покупку!</p>
+  `, { headers: { "Content-Type": "text/html;charset=UTF-8" } });
+}
+
+// Ошибка / отказ
+if (url.pathname === "/fail") {
+  return new Response(`
+  <h1>Платёж не выполнен</h1>
+  <p>Оплата была отменена или произошла ошибка.</p>
+  `, { headers: { "Content-Type": "text/html;charset=UTF-8" } });
+}
+
+
       // Проверка подписи: md5(MERCHANT_ID:AMOUNT:SECRET2:ORDER_ID)
       const expected = await md5(
         `${MERCHANT_ID}:${AMOUNT}:${env.FREEKASSA_SECRET2}:${ORDER_ID}`
