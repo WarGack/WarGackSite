@@ -6,27 +6,17 @@ export default {
     // Главная страница
     // ------------------
     if (url.pathname === "/") {
-      const baseUrl = env.BASE_URL || url.origin;
       return new Response(`
 <!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
 <title>Пожертвования</title>
-<style>
-body { font-family: Arial, sans-serif; max-width: 700px; margin: 0 auto; padding: 20px; }
-.donate-box { padding: 20px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 30px; }
-input, textarea { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #aaa; }
-button { padding: 12px 20px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; }
-button:hover { background: #218838; }
-.donation { border-bottom: 1px solid #ddd; padding: 10px 0; }
-.donation-amount { font-weight: bold; color: #28a745; }
-</style>
 </head>
 <body>
 <h1>Пожертвования</h1>
 
-<div class="donate-box">
+<div>
   <h2>Отправить пожертвование</h2>
   <form action="/create" method="POST">
     <label>Сумма (₽):</label>
@@ -36,33 +26,6 @@ button:hover { background: #218838; }
     <button type="submit">Отправить</button>
   </form>
 </div>
-
-<h2>Последние пожертвования:</h2>
-<div id="donations">Загрузка...</div>
-
-<script>
-async function loadDonations() {
-  try {
-    const res = await fetch("/api/donations");
-    const donations = await res.json();
-    const box = document.getElementById("donations");
-    box.innerHTML = "";
-    donations.forEach(d => {
-      const div = document.createElement("div");
-      div.className = "donation";
-      div.innerHTML = \`
-        <div class="donation-amount">+\${d.amount} ₽</div>
-        <div>\${d.message ? d.message : "<i>Без сообщения</i>"}</div>
-        <small>\${new Date(d.time).toLocaleString()}</small>
-      \`;
-      box.appendChild(div);
-    });
-  } catch (e) {
-    document.getElementById("donations").innerHTML = "Ошибка загрузки";
-  }
-}
-loadDonations();
-</script>
 
 </body>
 </html>
@@ -84,6 +47,8 @@ loadDonations();
       const hash = await crypto.subtle.digest("MD5", new TextEncoder().encode(str));
       const sign = md5(hash);
 
+      const baseUrl = env.BASE_URL || url.origin;
+
       const params = new URLSearchParams({
         m: env.FREEKASSA_MERCHANT_ID,
         oa: amount,
@@ -92,8 +57,8 @@ loadDonations();
         s: sign,
         us_message: message,
         lang: "ru",
-        success_url: `${env.BASE_URL || url.origin}/success`,
-        fail_url: `${env.BASE_URL || url.origin}/fail`
+        success_url: `${baseUrl}/success`,
+        fail_url: `${baseUrl}/fail`
       });
 
       return Response.redirect(`https://pay.fk.money/?${params.toString()}`, 302);
@@ -108,7 +73,7 @@ loadDonations();
       const AMOUNT = form.get("AMOUNT");
       const ORDER_ID = form.get("MERCHANT_ORDER_ID");
       const SIGN = form.get("SIGN");
-      const MESSAGE = form.get("us_message") || "";
+      // const MESSAGE = form.get("us_message") || ""; // Удалено, не используется
 
       if (!MERCHANT_ID || !AMOUNT || !ORDER_ID || !SIGN) {
         return new Response("Bad Request", { status: 400 });
@@ -121,31 +86,11 @@ loadDonations();
       const expected = md5(hash);
 
       if (expected === SIGN) {
-        // Сохраняем донат в KV
-        const data = {
-          amount: AMOUNT,
-          message: MESSAGE,
-          time: Date.now()
-        };
-        await env.DONATIONS.put(ORDER_ID, JSON.stringify(data));
+        // Логика сохранения данных о донате УДАЛЕНА
         return new Response("YES", { status: 200 });
       }
 
       return new Response("Bad sign", { status: 400 });
-    }
-
-    // -------------------
-    // API: список донатов
-    // -------------------
-    if (url.pathname === "/api/donations") {
-      const list = [];
-      for await (const key of env.DONATIONS.list({ limit: 100 })) {
-        const item = await env.DONATIONS.get(key.name, "json");
-        if(item) list.push(item);
-      }
-      // сортируем по времени DESC
-      list.sort((a,b) => b.time - a.time);
-      return new Response(JSON.stringify(list), { headers: { "Content-Type": "application/json" } });
     }
 
     // -------------------
