@@ -1,0 +1,5 @@
+{
+  "name": "mystatic-worker",
+  "main": "_worker.js",
+  "compatibility_date": "2025-12-09"
+}
