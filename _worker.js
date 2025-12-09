@@ -5,7 +5,7 @@
 // - SESSIONS_KV (KV Namespace) for storing sessions
 
 // NOTE: This is a demo. Do NOT use in production as-is without improvements
-// (rate-limiting, email verification, stronger password policies, secure cookie flags, SQL/kv injection checks, CSRF protection, HTTPS enforcement, account recovery, etc.)
+// (rate-limiting, email verification, stronger password policies, secure cookie flags, SQL/kv injection checks, CSRF protection, HTTPS enforcement, account recovery, etc)
 
 const SESSION_COOKIE_NAME = 'demo_session';
 const REMEMBER_SECONDS = 30 * 24 * 60 * 60; // 30 days
